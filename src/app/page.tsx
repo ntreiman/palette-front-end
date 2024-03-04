@@ -1,113 +1,184 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import { hexToHSL, hslToHex } from "./utils";
+import { SVGRouter } from "./svgs";
+
+export interface ColorEntry {
+  color: HSLColor;
+  svgIdentifier: string;
+  name: string | undefined;
+}
+
+export interface HSLColor {
+  h: number;
+  s: number;
+  l: number;
+}
 
 export default function Home() {
+  const [colors, setColors] = useState<ColorEntry[]>([
+    {
+      color: {
+        h: 50,
+        s: 80,
+        l: 40,
+      },
+      name: undefined,
+      svgIdentifier: "diamond",
+    },
+    {
+      color: {
+        h: 90,
+        s: 70,
+        l: 40,
+      },
+      name: undefined,
+      svgIdentifier: "heart",
+    },
+  ]);
+
+  const handleColorPickerChange = (index: number, value: string) => {
+    const hslColor = hexToHSL(value);
+    setColors((colors) =>
+      colors.map((c, i) => {
+        if (i === index) {
+          return { ...c, color: hslColor };
+        }
+        return c;
+      })
+    );
+  };
+
+  const handleRename = (index: number, value: string) => {
+    setColors((colors) =>
+      colors.map((c, i) => {
+        if (i === index) {
+          return { ...c, name: value };
+        }
+        return c;
+      })
+    );
+  };
+
+  const addColor = () => {
+    let c: HSLColor = { h: 0, s: 0, l: 0 };
+    setColors((colors) => [
+      ...colors,
+      { color: c, name: undefined, svgIdentifier: "diamond" },
+    ]);
+  };
+
+  const sendToPalette = () => {
+    alert("sent!")
+  }
+
+  const removeColor = (index: number) => {
+    setColors((colors) => colors.filter((_, i) => i !== index));
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="h-screen bg-[#e4b3c880] p-4 overflow-x-clip">
+      <div className="flex flex-col md:flex-row h-full md:items-start">
+        <div className="bg-blue-50 p-2 rounded">
+          <h1 className="text-2xl">
+            Customize your{" "}
+            <span className="text-[#e4b3c8]">
+              <i>Palette</i>
+            </span>
+          </h1>
+          <hr className="mb-2 mt-1 border-black/20" />
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col items-stretch min-w-[300px]">
+              {colors.map((c, i) => {
+                return (
+                  <div className="flex justify-between items-center" key={i}>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={(e) => removeColor(i)}
+                        className="text-red-500 w-4"
+                      >
+                        ⊖
+                      </button>
+                      <input
+                        className="w-[80px]"
+                        value={c.name ?? `Color ${i + 1}`}
+                        onChange={(e) => handleRename(i, e.target.value)}
+                      ></input>
+                    </div>
+                    <div className="flex space-x-4">
+                      <input
+                        type="color"
+                        value={hslToHex(c.color)}
+                        onChange={(e) =>
+                          handleColorPickerChange(i, e.target.value)
+                        }
+                      />
+                      <div className="w-[25px] h-[25px]">
+                        {c.svgIdentifier.length > 0 && (
+                          <SVGRouter
+                            svgIdentifier={c.svgIdentifier}
+                            color={hslToHex(c.color)}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <button
+                className="border border-black hover:bg-gray-100 px-2 py-1 font-semibold rounded mx-2 my-2"
+                onClick={addColor}
+              >
+                ➕ Add Color
+              </button>
+              <button
+                className="flex items-center justify-center border bg-black hover:bg-gray-800 border-white text-white px-2 py-1 font-semibold rounded mx-2 mb-2"
+                onClick={sendToPalette}
+              >
+                <img className="h-[20px] mr-2 mt-1" src="plogo.png" />
+                Go
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="md:ml-4 mt-4 w-full">
+          <Circle entries={colors} />
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+function Circle({ entries }: { entries: ColorEntry[] }) {
+  let interval = entries.length <= 9 ? 40 : 360 / entries.length;
+  return (
+    <div className="relative w-full pt-[100%] pointer-events-none">
+      <div className="absolute bg-white w-full h-full top-0 left-0 rounded-full"></div>
+      <img
+        className="absolute top-1/2 left-1/2 -ml-[26px] -mt-[30px] h-20  md:-ml-[36px] md:-mt-[56px] md:h-28"
+        src="plogo.png"
+      />
+      {entries.map((e, i) => {
+        return (
+          <div
+            key={i}
+            className="absolute w-full h-full top-0 left-0"
+            style={{ rotate: `${i * interval}deg` }}
+          >
+            <div
+              className="absolute top-8 w-16 h-16"
+              style={{ left: "calc(50% - 32px)" }}
+            >
+              {e.svgIdentifier.length > 0 && (
+                <SVGRouter
+                  svgIdentifier={e.svgIdentifier}
+                  color={hslToHex(e.color)}
+                />
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
