@@ -1,5 +1,13 @@
 import { HSLColor } from "./page";
 
+interface CMYKWColor {
+  c: number;
+  m: number;
+  y: number;
+  k: number;
+  w: number;
+}
+
 export function hslToHex(color: HSLColor): string {
   let { h, s, l } = color;
   s /= 100;
@@ -51,6 +59,7 @@ export function hslToHex(color: HSLColor): string {
 
   return `#${rHex}${gHex}${bHex}`;
 }
+
 // Helper function to convert HEX to HSL
 export const hexToHSL = (hex: string): HSLColor => {
   // Ensure the hex string is properly formatted and convert it to RGB
@@ -96,3 +105,70 @@ export const hexToHSL = (hex: string): HSLColor => {
     l: Math.round(l * 100),
   };
 };
+
+function hslToRGB(color: HSLColor): { r: number; g: number; b: number } {
+  let { h, s, l } = color;
+  s /= 100;
+  l /= 100;
+
+  let c = (1 - Math.abs(2 * l - 1)) * s,
+    x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
+    m = l - c / 2,
+    r = 0,
+    g = 0,
+    b = 0;
+
+  if (0 <= h && h < 60) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (60 <= h && h < 120) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (120 <= h && h < 180) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (180 <= h && h < 240) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (240 <= h && h < 300) {
+    r = x;
+    g = 0;
+    b = c;
+  } else if (300 <= h && h < 360) {
+    r = c;
+    g = 0;
+    b = x;
+  }
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
+  };
+}
+
+
+export function hslToCMYKW(color: HSLColor): CMYKWColor {
+  const { r, g, b } = hslToRGB(color);
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  const k = 1 - max / 255;
+  const c = (1 - r / 255 - k) / (1 - k);
+  const m = (1 - g / 255 - k) / (1 - k);
+  const y = (1 - b / 255 - k) / (1 - k);
+  const w = min / 255;
+
+  return { c, m, y, k, w };
+}
+
+export function hexToCMYKW(hex: string): CMYKWColor {
+  const hslColor = hexToHSL(hex);
+  return hslToCMYKW(hslColor);
+}

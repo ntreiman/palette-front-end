@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { hexToHSL, hslToHex } from "./utils";
-import { SVGRouter } from "./svgs";
+import { hexToHSL, hslToHex, hexToCMYKW } from "./utils";
+import { SVGRouter, getPathData, convertPathToCoordinates, formatCoordinates } from "./svgs";
+
 
 export interface ColorEntry {
   color: HSLColor;
@@ -68,9 +69,40 @@ export default function Home() {
     ]);
   };
 
-  const sendToPalette = () => {
-    alert("sent!")
-  }
+  const sendToPalette = async () => {
+    const endpoint = 'http://192.168.86.245/files?action=list&filename=all&path=/';
+    const data = {
+      colors: colors.map(c => ({
+        color: hexToCMYKW(hslToHex(c.color)), // Convert the color to CMYKW format
+        svgIdentifier: c.svgIdentifier,
+        pathData: getPathData(c.svgIdentifier) || ""
+        // Convert SVG path data
+      }))
+    };
+  
+  
+  
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (response.ok) {
+        console.log('Data sent successfully');
+        // Handle successful data transmission here
+      } else {
+        console.error('Failed to send data:', await response.text());
+        // Handle server errors here
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      // Handle network errors here
+    }
+  };
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
@@ -182,3 +214,4 @@ function Circle({ entries }: { entries: ColorEntry[] }) {
     </div>
   );
 }
+
