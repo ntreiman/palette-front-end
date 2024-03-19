@@ -70,15 +70,35 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const endpoint = 'http://192.168.86.245/files?action=list&filename=all&path=/';
-    const data = {
-      colors: colors.map(c => ({
-        color: hexToCMYKW(hslToHex(c.color)), // Convert the color to CMYKW format
-        svgIdentifier: c.svgIdentifier,
-        pathData: getPathData(c.svgIdentifier) || ""
-        // Convert SVG path data
-      }))
-    };
+  const endpoint = 'http://192.168.86.245/files'; // Update the endpoint if needed
+  const formData = new FormData();
+
+  // Append colors data (JSON) to FormData
+  formData.append('colors', JSON.stringify(colors));
+
+  // Append the file (e.g., imageFile) to FormData
+  // Replace 'imageFile' with the actual file data you want to upload
+  formData.append('file', imageFile);
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (response.ok) {
+      console.log('File sent successfully');
+      // Handle successful file transmission here
+    } else {
+      console.error('Failed to send file:', await response.text());
+      // Handle server errors here
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    // Handle network errors here
+  }
+};
+
   
   
   
