@@ -70,52 +70,33 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-  const endpoint = 'http://192.168.86.245/files'; // Update the endpoint if needed
-  const formData = new FormData();
-
-  // Append colors data (JSON) to FormData
-  formData.append('colors', JSON.stringify(colors));
-
-  // Append the file (e.g., imageFile) to FormData
-  // Replace 'imageFile' with the actual file data you want to upload
-  formData.append('file', imageFile);
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (response.ok) {
-      console.log('File sent successfully');
-      // Handle successful file transmission here
-    } else {
-      console.error('Failed to send file:', await response.text());
-      // Handle server errors here
-    }
-  } catch (error) {
-    console.error('Network error:', error);
-    // Handle network errors here
-  }
-};
-
+    const endpoint = 'http://192.168.86.245/files'; // Update the endpoint if needed
+    const formData = new FormData();
   
+    // Append colors data (JSON) to FormData
+    formData.append('colors', JSON.stringify(colors));
   
+// Append text content from colors.map to FormData
+const textContent = colors.map((c) => (
+  `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}`
+)).join('\n');
+formData.append('textContent', textContent);
+
+    // Append additional parameters
+    formData.append('path', '/');
+    formData.append('/s.txtS', '1');
   
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        body: formData,
       });
   
       if (response.ok) {
-        console.log('Data sent successfully');
-        // Handle successful data transmission here
+        console.log('File sent successfully');
+        // Handle successful file transmission here
       } else {
-        console.error('Failed to send data:', await response.text());
+        console.error('Failed to send file:', await response.text());
         // Handle server errors here
       }
     } catch (error) {
@@ -123,6 +104,7 @@ export default function Home() {
       // Handle network errors here
     }
   };
+  
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
