@@ -76,9 +76,9 @@ export default function Home() {
     // Append colors data (JSON) to FormData
     formData.append('colors', JSON.stringify(colors));
   
-// Append text content from colors.map to FormData
-const textContent = colors.map((c) => (
-  `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}`
+ // Append text content from colors.map to FormData
+ const textContent = colors.map((c) => (
+  `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}, Path Data: ${getPathData(c.svgIdentifier)}`
 )).join('\n');
 formData.append('textContent', textContent);
 
