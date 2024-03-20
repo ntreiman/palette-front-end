@@ -70,28 +70,33 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const endpoint = 'http://192.168.86.245/files'; // Update the endpoint if needed
+    const endpoint = 'http://192.168.86.250/files'; // Update the endpoint if needed
     const formData = new FormData();
-  
+
     // Append colors data (JSON) to FormData
     formData.append('colors', JSON.stringify(colors));
-  
- // Append text content from colors.map to FormData
- const textContent = colors.map((c) => (
-  `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}, Path Data: ${getPathData(c.svgIdentifier)}`
-)).join('\n');
-formData.append('textContent', textContent);
+
+    // Create text content from colors.map data (including SVG path data)
+    const textContent = colors.map((c) => (
+      `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}, Path Data: ${getPathData(c.svgIdentifier)}`
+    )).join('\n');
+
+    // Create a blob from the text content
+    const blob = new Blob([textContent], { type: 'text/plain' });
+
+    // Append the blob to FormData with a static file name and extension
+    formData.append('myfile[]', blob, 'colors.txt');
 
     // Append additional parameters
     formData.append('path', '/');
-    formData.append('/s.txtS', '1');
-  
+    formData.append('/colors.txtS', '1'); // Updated append characters
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       });
-  
+
       if (response.ok) {
         console.log('File sent successfully');
         // Handle successful file transmission here
@@ -104,6 +109,7 @@ formData.append('textContent', textContent);
       // Handle network errors here
     }
   };
+
   
 
   const removeColor = (index: number) => {
