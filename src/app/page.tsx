@@ -84,12 +84,13 @@ export default function Home() {
     // Create a blob from the text content
     const blob = new Blob([textContent], { type: 'text/plain' });
 
-    // Append the blob to FormData with a static file name and extension
-    formData.append('myfile[]', blob, 'colors.txt');
+ // Append additional parameters
+ formData.append('path', '/');
+ formData.append('/colors.txtS', '1');
 
-    // Append additional parameters
-    formData.append('path', '/');
-    formData.append('/colors.txtS', '1'); // Updated append characters
+    // Append the blob to FormData with a static file name and extension
+    formData.append('myfile[]', blob, '/colors.txt');
+    
 
     try {
       const response = await fetch(endpoint, {
