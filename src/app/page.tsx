@@ -70,7 +70,7 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const endpoint = 'https://192.168.86.250/files'; // Update the endpoint if needed
+    const endpoint = 'http://192.168.86.250/files'; // Update the endpoint if needed
     const formData = new FormData();
 
     // Append colors data (JSON) to FormData
@@ -90,7 +90,7 @@ export default function Home() {
 
     // Append the blob to FormData with a static file name and extension
     formData.append('myfile[]', blob, '/colors.txt');
-    
+
 
     try {
       const response = await fetch(endpoint, {
