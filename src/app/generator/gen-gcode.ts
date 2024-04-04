@@ -8,7 +8,7 @@ export function genFullGCode(swatchInputs: SwatchInput[]): string {
   output_gcode.push(genSetup());
 
   swatchInputs.forEach((swatchInput, i) => {
-    output_gcode.push(genResetToOriginAtIndex(i, swatchInputs.length));
+    output_gcode.push(genResetToSwatchOrigin(i, swatchInputs.length));
     output_gcode.push(genSwatch(swatchInput));
   });
   output_gcode.push(genFinish());
@@ -19,7 +19,7 @@ function genSetup(): string {
   return "";
 }
 
-function genResetToOriginAtIndex(index: number, total: number): string {
+function genResetToSwatchOrigin(index: number, total: number): string {
   return `G1 X0 Y0`;
 }
 
