@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { hexToHSL, hslToHex } from "./utils";
-import { SVGRouter } from "./svgs";
 import { genFullGCode } from "./generator/gen-gcode";
+import { SVGRouter, getPathData } from "./svgs";
+import { hexToHSL, hslToHex } from "./utils";
+
 
 export interface ColorEntry {
   color: HSLColor;
@@ -78,9 +79,49 @@ export default function Home() {
     ]);
   };
 
-  const sendToPalette = () => {
-    alert("sent!");
+  const sendToPalette = async () => {
+    const endpoint = 'http://192.168.86.250/files'; // Update the endpoint if needed
+    const formData = new FormData();
+
+    // Append colors data (JSON) to FormData
+    formData.append('colors', JSON.stringify(colors));
+
+    // Create text content from colors.map data (including SVG path data)
+    const textContent = colors.map((c) => (
+      `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}, Path Data: ${getPathData(c.svgIdentifier)}`
+    )).join('\n');
+
+    // Create a blob from the text content
+    const blob = new Blob([textContent], { type: 'text/plain' });
+
+ // Append additional parameters
+ formData.append('path', '/');
+ formData.append('/colors.txtS', '1');
+
+    // Append the blob to FormData with a static file name and extension
+    formData.append('myfile[]', blob, '/colors.txt');
+
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log('File sent successfully');
+        // Handle successful file transmission here
+      } else {
+        console.error('Failed to send file:', await response.text());
+        // Handle server errors here
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      // Handle network errors here
+    }
   };
+
+  
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
@@ -192,3 +233,4 @@ function Circle({ entries }: { entries: ColorEntry[] }) {
     </div>
   );
 }
+
