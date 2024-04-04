@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { hexToHSL, hslToHex } from "./utils";
 import { SVGRouter } from "./svgs";
+import { genFullGCode } from "./generator/gen-gcode";
 
 export interface ColorEntry {
   color: HSLColor;
@@ -37,6 +38,15 @@ export default function Home() {
     },
   ]);
 
+  fetch("/drawing.svg")
+    .then((response) => response.text())
+    .then((d) => {
+      console.log(genFullGCode([{
+        raw_svg_contents: d,
+        color_percentages: [0.2, 0.1, 0.3, 0.1, 0.3]
+      }]));
+    });
+
   const handleColorPickerChange = (index: number, value: string) => {
     const hslColor = hexToHSL(value);
     setColors((colors) =>
@@ -69,8 +79,8 @@ export default function Home() {
   };
 
   const sendToPalette = () => {
-    alert("sent!")
-  }
+    alert("sent!");
+  };
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
