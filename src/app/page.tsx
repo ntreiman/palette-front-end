@@ -39,7 +39,7 @@ export default function Home() {
     },
   ]);
 
-  fetch("/drawing.svg")
+  fetch("/drawing2.svg")
     .then((response) => response.text())
     .then((d) => {
       console.log(genFullGCode([{
