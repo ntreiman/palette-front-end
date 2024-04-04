@@ -1,16 +1,6 @@
 import {
-  euclidDist,
-  pathFromRawSVG,
-  findIndexOfPointThatFullyFitUnderTargetLength,
-  getTotalLengthOfSVGPath,
-  manuallyComputeSVGPathLength,
-  svgFromString,
-  takeSegmentsUntilTargetLength,
-  lerp,
-  createPointAtFractionBetween,
-  swatchToMinipaths,
+    swatchToMinipaths
 } from "./utils";
-import { pointsOnPath } from "points-on-path";
 
 export function genFullGCode(swatchInputs: SwatchInput[]): string {
   const output_gcode: string[] = [];
