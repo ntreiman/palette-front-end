@@ -80,7 +80,7 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const endpoint = 'http://192.168.86.250/files'; // Update the endpoint if needed
+    const endpoint = 'http://192.168.86.20/files'; // Update the endpoint if needed
     const formData = new FormData();
 
     // Append colors data (JSON) to FormData
