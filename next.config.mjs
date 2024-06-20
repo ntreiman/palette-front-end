@@ -4,7 +4,7 @@ const nextConfig = {
         return [
             {
                 source: '/api/:path*',  // Proxy endpoint in Next.js
-                destination: 'http://192.168.86.20/:path*',  // Actual target URL
+                destination: 'http://10.0.0.42/:path*',  // Actual target URL
             },
         ];
     },
