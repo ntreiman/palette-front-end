@@ -4,7 +4,6 @@ import { genFullGCode } from "./generator/gen-gcode";
 import { SVGRouter, getPathData } from "./svgs";
 import { hexToHSL, hslToHex } from "./utils";
 
-
 export interface ColorEntry {
   color: HSLColor;
   svgIdentifier: string;
@@ -42,10 +41,14 @@ export default function Home() {
   fetch("/drawing2.svg")
     .then((response) => response.text())
     .then((d) => {
-      console.log(genFullGCode([{
-        raw_svg_contents: d,
-        color_percentages: [0.2, 0.1, 0.3, 0.1, 0.3]
-      }]));
+      console.log(
+        genFullGCode([
+          {
+            raw_svg_contents: d,
+            color_percentages: [0.2, 0.1, 0.3, 0.1, 0.3],
+          },
+        ])
+      );
     });
 
   const handleColorPickerChange = (index: number, value: string) => {
@@ -80,7 +83,7 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const endpoint = 'https://obsidiancafe.com/files'; // Update the endpoint if needed
+    const endpoint = 'https://obsidiancafe.com/files'; // Endpoint updated to include /files
     const formData = new FormData();
 
     // Append colors data (JSON) to FormData
@@ -94,18 +97,21 @@ export default function Home() {
     // Create a blob from the text content
     const blob = new Blob([textContent], { type: 'text/plain' });
 
- // Append additional parameters
- formData.append('path', '/');
- formData.append('/colors.txtS', '1');
+    // Append additional parameters
+    formData.append('path', '/');
+    formData.append('/colors.txtS', '1');
 
     // Append the blob to FormData with a static file name and extension
     formData.append('myfile[]', blob, '/colors.txt');
 
-
+    // Send the request
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
       if (response.ok) {
@@ -120,8 +126,6 @@ export default function Home() {
       // Handle network errors here
     }
   };
-
-  
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
@@ -140,42 +144,38 @@ export default function Home() {
           <hr className="mb-2 mt-1 border-black/20" />
           <div className="flex flex-col items-center">
             <div className="flex flex-col items-stretch min-w-[300px]">
-              {colors.map((c, i) => {
-                return (
-                  <div className="flex justify-between items-center" key={i}>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={(e) => removeColor(i)}
-                        className="text-red-500 w-4"
-                      >
-                        ⊖
-                      </button>
-                      <input
-                        className="w-[80px]"
-                        value={c.name ?? `Color ${i + 1}`}
-                        onChange={(e) => handleRename(i, e.target.value)}
-                      ></input>
-                    </div>
-                    <div className="flex space-x-4">
-                      <input
-                        type="color"
-                        value={hslToHex(c.color)}
-                        onChange={(e) =>
-                          handleColorPickerChange(i, e.target.value)
-                        }
-                      />
-                      <div className="w-[25px] h-[25px]">
-                        {c.svgIdentifier.length > 0 && (
-                          <SVGRouter
-                            svgIdentifier={c.svgIdentifier}
-                            color={hslToHex(c.color)}
-                          />
-                        )}
-                      </div>
+              {colors.map((c, i) => (
+                <div className="flex justify-between items-center" key={i}>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => removeColor(i)}
+                      className="text-red-500 w-4"
+                    >
+                      ⊖
+                    </button>
+                    <input
+                      className="w-[80px]"
+                      value={c.name ?? `Color ${i + 1}`}
+                      onChange={(e) => handleRename(i, e.target.value)}
+                    ></input>
+                  </div>
+                  <div className="flex space-x-4">
+                    <input
+                      type="color"
+                      value={hslToHex(c.color)}
+                      onChange={(e) => handleColorPickerChange(i, e.target.value)}
+                    />
+                    <div className="w-[25px] h-[25px]">
+                      {c.svgIdentifier.length > 0 && (
+                        <SVGRouter
+                          svgIdentifier={c.svgIdentifier}
+                          color={hslToHex(c.color)}
+                        />
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
               <button
                 className="border border-black hover:bg-gray-100 px-2 py-1 font-semibold rounded mx-2 my-2"
                 onClick={addColor}
@@ -186,7 +186,7 @@ export default function Home() {
                 className="flex items-center justify-center border bg-black hover:bg-gray-800 border-white text-white px-2 py-1 font-semibold rounded mx-2 mb-2"
                 onClick={sendToPalette}
               >
-                <img className="h-[20px] mr-2 mt-1" src="plogo.png" />
+                <img className="h-[20px] mr-2 mt-1" src="plogo.png" alt="logo" />
                 Go
               </button>
             </div>
@@ -208,29 +208,27 @@ function Circle({ entries }: { entries: ColorEntry[] }) {
       <img
         className="absolute top-1/2 left-1/2 -ml-[26px] -mt-[30px] h-20  md:-ml-[36px] md:-mt-[56px] md:h-28"
         src="plogo.png"
+        alt="logo"
       />
-      {entries.map((e, i) => {
-        return (
+      {entries.map((e, i) => (
+        <div
+          key={i}
+          className="absolute w-full h-full top-0 left-0"
+          style={{ rotate: `${i * interval}deg` }}
+        >
           <div
-            key={i}
-            className="absolute w-full h-full top-0 left-0"
-            style={{ rotate: `${i * interval}deg` }}
+            className="absolute top-8 w-16 h-16"
+            style={{ left: "calc(50% - 32px)" }}
           >
-            <div
-              className="absolute top-8 w-16 h-16"
-              style={{ left: "calc(50% - 32px)" }}
-            >
-              {e.svgIdentifier.length > 0 && (
-                <SVGRouter
-                  svgIdentifier={e.svgIdentifier}
-                  color={hslToHex(e.color)}
-                />
-              )}
-            </div>
+            {e.svgIdentifier.length > 0 && (
+              <SVGRouter
+                svgIdentifier={e.svgIdentifier}
+                color={hslToHex(e.color)}
+              />
+            )}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
-
