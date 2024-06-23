@@ -80,7 +80,7 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const endpoint = 'https://obsidiancafe.com'; // Update the endpoint if needed
+    const endpoint = 'https://obsidiancafe.com/files'; // Update the endpoint if needed
     const formData = new FormData();
 
     // Append colors data (JSON) to FormData
