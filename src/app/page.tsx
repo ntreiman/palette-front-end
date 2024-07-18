@@ -129,7 +129,9 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
+    const swatchInputs = colors.map((c) =>
+      convertColorEntryToSwatchInput(c, svgContents)
+    );
     console.log(genFullGCode(swatchInputs));
     const endpoint = "https://obsidiancafe.com/files"; // Endpoint updated to include /files
     const formData = new FormData();
@@ -280,6 +282,31 @@ export default function Home() {
                     Go
                   </button>
                 )}
+
+                {colors.length === 0 && (
+                  <button
+                    className="flex items-center justify-center border bg-black hover:bg-gray-800 border-white text-white px-2 py-1 font-semibold rounded mx-2 mb-2"
+                    onClick={() => {
+                      setColors(
+                        [1, 2, 3, 4].map((i) => {
+                          let color = {
+                            h: Math.random() * 360,
+                            s: Math.random() * 100,
+                            l: Math.random() * 70 + 30,
+                          };
+                          return {
+                            color,
+                            svgIdentifier: "diamond",
+                            name: guessColorName(hslToHex(color)),
+                            amount: 1,
+                          };
+                        })
+                      );
+                    }}
+                  >
+                    Surpise me
+                  </button>
+                )}
                 <p className="text-gray-500 mx-2 text-center">
                   {colors.length == 0
                     ? "Add a color to start building your color palette"
@@ -315,11 +342,9 @@ function Circle({ entries }: { entries: ColorEntry[] }) {
         >
           <div
             className="absolute top-8 w-16 h-16"
-            style={{ 
-              left: "calc(50% - 32px)", 
-              scale: (e.amount == 0) ? 0.75 : (
-                (e.amount == 1) ? 1 : 1.25
-              )
+            style={{
+              left: "calc(50% - 32px)",
+              scale: e.amount == 0 ? 0.75 : e.amount == 1 ? 1 : 1.25,
             }}
           >
             {e.svgIdentifier.length > 0 && (
