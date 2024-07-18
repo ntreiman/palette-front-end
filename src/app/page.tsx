@@ -39,13 +39,52 @@ export default function Home() {
     },
   ]);
 
-  fetch("/drawing2.svg")
+  fetch("/drawing4.svg")
     .then((response) => response.text())
     .then((d) => {
-      console.log(genFullGCode([{
-        raw_svg_contents: d,
-        color_percentages: [0.2, 0.1, 0.3, 0.1, 0.3]
-      }]));
+      console.log(genFullGCode([
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.56, 0.44, 0, 0, 0] //purple
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.7, 0, 0, 0.3, 0] //red
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.7, 0.07, 0.23, 0, 0] //pink
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.0, 0.5, 0, 0.5, 0] //green
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.375, 0, 0, 0.625, 0] //orange
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.12, 0.88, 0, 0, 0] //dark blue
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.096, 0.704, 0.2, 0, 0] //light blue
+        },
+        {
+          raw_svg_contents: d,
+          length_percentage: 0.20,
+          color_percentages: [0.08, 0.0, 0.42, 0.5, 0] //tan
+        }
+      ]));
+      
     });
 
   const handleColorPickerChange = (index: number, value: string) => {

@@ -7,6 +7,8 @@ export function pathFromRawSVG(svg_string: string): string {
   return path ? path.getAttribute("d") || '' : '';
 }
 
+
+
 export function svgFromString(svg_string: string): Document {
   const parser = new DOMParser();
   const svg_doc = parser.parseFromString(svg_string, "text/xml");
@@ -88,19 +90,23 @@ export function swatchToMinipaths(swatchInput: SwatchInput): Minipath[] {
       const GAP_LENGTH = 2;
       const numGaps = numColors - 1;
       const path = pathFromRawSVG(swatchInput.raw_svg_contents);
-      const points = pointsOnPath(path, 0.1)[0]; // we only have 1 path in our svgs
-      const length = manuallyComputeSVGPathLength(points);
+      const points = pointsOnPath(path, 0.05)[0]; // we only have 1 path in our svgs 
+
+      const numPoints = Math.floor(points.length * swatchInput.length_percentage);
+      const truncatedPoints = points.slice(0, numPoints);
+
+      const length = manuallyComputeSVGPathLength(truncatedPoints);
       const lengthsPerColor = swatchInput.color_percentages.map(
         (p) => (length - GAP_LENGTH * numGaps) * p
       );
 
-      let mutPoints = [...points]; // this will be sliced into segments
+      let mutPoints = [...truncatedPoints]; // this will be sliced into segments
       const minipathsPerColor = [];
-      console.log("SANITY CHECK: total number of points", mutPoints.length);
-      console.log(
-        "SANITY CHECK: total number of segments",
-        mutPoints.length - 1
-      );
+      //console.log("SANITY CHECK: total number of points", mutPoints.length);
+      //console.log(
+       // "SANITY CHECK: total number of segments",
+        //mutPoints.length - 1
+      //);
 
       for (let i = 0; i < lengthsPerColor.length; i++) {
         if (lengthsPerColor[i] < 0.0001) {
