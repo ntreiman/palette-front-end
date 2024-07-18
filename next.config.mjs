@@ -4,7 +4,7 @@ const nextConfig = {
         return [
             {
                 source: '/api/:path*',  // Proxy endpoint in Next.js
-                destination: 'http://192.168.86.250/:path*',  // Actual target URL
+                destination: 'https://obsidiancafe.com/:path*',  // Actual target URL
             },
         ];
     },
