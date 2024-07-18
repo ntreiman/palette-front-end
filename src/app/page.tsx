@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { genFullGCode } from "./generator/gen-gcode";
 import { SVGRouter, getPathData } from "./svgs";
-import { hexToHSL, hslToHex } from "./utils";
+import { convertColorEntryToSwatchInput, hexToHSL, hslToHex } from "./utils";
 import { guessColorName } from "./color-guesser";
 
 export interface ColorEntry {
@@ -19,30 +19,13 @@ export interface HSLColor {
 }
 
 export default function Home() {
-  const [colors, setColors] = useState<ColorEntry[]>([
-    // {
-    //   color: {
-    //     h: 50,
-    //     s: 80,
-    //     l: 40,
-    //   },
-    //   name: undefined,
-    //   svgIdentifier: "diamond",
-    // },
-    // {
-    //   color: {
-    //     h: 90,
-    //     s: 70,
-    //     l: 40,
-    //   },
-    //   name: undefined,
-    //   svgIdentifier: "heart",
-    // },
-  ]);
+  const [svgContents, setSvgContents] = useState<string>("");
+  const [colors, setColors] = useState<ColorEntry[]>([]);
 
   fetch("/drawing4.svg")
     .then((response) => response.text())
     .then((d) => {
+      setSvgContents(d);
       console.log(
         genFullGCode([
           {
@@ -146,6 +129,8 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
+    const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
+    console.log(genFullGCode(swatchInputs));
     const endpoint = "https://obsidiancafe.com/files"; // Endpoint updated to include /files
     const formData = new FormData();
 

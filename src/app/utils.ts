@@ -1,4 +1,5 @@
-import { HSLColor } from "./page";
+import { SwatchInput } from "./generator/gen-gcode";
+import { ColorEntry, HSLColor } from "./page";
 
 interface CMYKWColor {
   c: number;
@@ -151,7 +152,6 @@ function hslToRGB(color: HSLColor): { r: number; g: number; b: number } {
   };
 }
 
-
 export function hslToCMYKW(color: HSLColor): CMYKWColor {
   const { r, g, b } = hslToRGB(color);
 
@@ -171,4 +171,28 @@ export function hslToCMYKW(color: HSLColor): CMYKWColor {
 export function hexToCMYKW(hex: string): CMYKWColor {
   const hslColor = hexToHSL(hex);
   return hslToCMYKW(hslColor);
+}
+
+export function convertColorEntryToSwatchInput(
+  colorEntry: ColorEntry,
+  svgContents: string
+): SwatchInput {
+  let length_percentage = 0;
+  switch (colorEntry.amount) {
+    case 0:
+      length_percentage = 0.2;
+      break;
+    case 1:
+      length_percentage = 0.6;
+      break;
+    case 2:
+      length_percentage = 0.8;
+      break;
+  }
+  const cmykw = hslToCMYKW(colorEntry.color)
+  return {
+    color_percentages: [cmykw.c, cmykw.m, cmykw.y, cmykw.k, cmykw.w],
+    raw_svg_contents: svgContents,
+    length_percentage: length_percentage,
+  };
 }
