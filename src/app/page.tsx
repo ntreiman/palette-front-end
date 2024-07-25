@@ -30,44 +30,34 @@ export default function Home() {
         genFullGCode([
           {
             raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.56, 0.44, 0, 0, 0], //purple
+            length_percentage: 1,
+            color_percentages: [0, 0.3, 0.7, 0, 0], //purple
           },
           {
             raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.7, 0, 0, 0.3, 0], //red
+            length_percentage: 1,
+            color_percentages: [0.1, 0.45, 0.45, 0, 0], //purple
           },
           {
             raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.7, 0.07, 0.23, 0, 0], //pink
+            length_percentage: 1,
+            color_percentages: [0.2, 0.6, 0.2, 0, 0], //purple
           },
           {
             raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.0, 0.5, 0, 0.5, 0], //green
+            length_percentage: 1,
+            color_percentages: [0.3, 0.35, 0.35, 0, 0], //purple
           },
           {
             raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.375, 0, 0, 0.625, 0], //orange
+            length_percentage: 1,
+            color_percentages: [0.5, 0.2, 0.3, 0, 0], //purple
           },
           {
             raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.12, 0.88, 0, 0, 0], //dark blue
-          },
-          {
-            raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.096, 0.704, 0.2, 0, 0], //light blue
-          },
-          {
-            raw_svg_contents: d,
-            length_percentage: 0.2,
-            color_percentages: [0.08, 0.0, 0.42, 0.5, 0], //tan
-          },
+            length_percentage: 1,
+            color_percentages: [0.7, 0.3, 0.0, 0, 0], //purple
+          }
         ])
       );
     });
@@ -174,8 +164,6 @@ export default function Home() {
       console.error("Error in sendToPalette:", error);
     }
   };
-  
-
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
