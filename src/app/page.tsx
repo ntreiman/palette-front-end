@@ -143,7 +143,7 @@ export default function Home() {
       
       // Create a FormData object and append the blob with a filename
       const formData = new FormData();
-      formData.append("file", blob, "colors.txt");
+      formData.append("upload", blob, "colors.txt");
   
       // Send the request
       const response = await fetch(endpoint, {
