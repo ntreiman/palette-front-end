@@ -132,18 +132,20 @@ export default function Home() {
       const textContent = colors
         .map(
           (c) =>
-            `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${c.name}, Path Data: ${getPathData(c.svgIdentifier)}`
+            `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${
+              c.name
+            }, Path Data: ${getPathData(c.svgIdentifier)}`
         )
         .join("\n");
   
-      console.log("Text content prepared:", textContent);
-  
       // Create a blob from the text content
       const blob = new Blob([textContent], { type: "text/plain" });
-      
-      // Create a FormData object and append the blob with a filename
+  
+      // Prepare FormData to mimic a file upload
       const formData = new FormData();
       formData.append("upload", blob, "colors.txt");
+  
+      console.log("FormData prepared:", formData);
   
       // Send the request
       const response = await fetch(endpoint, {
@@ -155,16 +157,13 @@ export default function Home() {
         console.log("File sent successfully");
         // Handle successful file transmission here
       } else {
-        const errorText = await response.text();
-        console.error("Failed to send file:", errorText);
+        console.error("Failed to send file:", await response.text());
         // Handle server errors here
       }
     } catch (error) {
       console.error("Error in sendToPalette:", error);
     }
   };
-  
-  
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
