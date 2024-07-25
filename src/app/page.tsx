@@ -138,13 +138,17 @@ export default function Home() {
   
       console.log("Text content prepared:", textContent);
   
-      // Send the request with the text content as plain text
+      // Create a blob from the text content
+      const blob = new Blob([textContent], { type: "text/plain" });
+      
+      // Create a FormData object and append the blob with a filename
+      const formData = new FormData();
+      formData.append("file", blob, "colors.txt");
+  
+      // Send the request
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-        body: textContent,
+        body: formData,
       });
   
       if (response.ok) {
@@ -159,6 +163,7 @@ export default function Home() {
       console.error("Error in sendToPalette:", error);
     }
   };
+  
   
 
   const removeColor = (index: number) => {
