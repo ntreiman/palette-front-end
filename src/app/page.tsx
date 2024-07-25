@@ -152,8 +152,8 @@ export default function Home() {
   const blob = new Blob([textContent], { type: "text/plain" });
 
   // Append additional parameters
-  formData.append("path", "/");
-  formData.append("/colors.txtS", "1");
+  //formData.append("path", "/");
+  //formData.append("/colors.txtS", "1");
 
   // Append the blob to FormData with a static file name and extension
   formData.append("myfile[]", blob, "/colors.txt");
