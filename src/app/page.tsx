@@ -129,54 +129,52 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-  const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
-  console.log(genFullGCode(swatchInputs));
-
-  const endpoint = "http://192.168.0.202/upload"; // Update to the ESP32's local IP address and the upload endpoint
-  const formData = new FormData();
-
-  // Append colors data (JSON) to FormData
-  formData.append("colors", JSON.stringify(colors));
-
-  // Create text content from colors.map data (including SVG path data)
-  const textContent = colors
-    .map(
-      (c) =>
-        `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${
-          c.name
-        }, Path Data: ${getPathData(c.svgIdentifier)}`
-    )
-    .join("\n");
-
-  // Create a blob from the text content
-  const blob = new Blob([textContent], { type: "text/plain" });
-
-  // Append additional parameters
-  //formData.append("path", "/");
-  //formData.append("/colors.txtS", "1");
-
-  // Append the blob to FormData with a static file name and extension
-  formData.append("myfile[]", blob, "/colors.txt");
-
-  // Send the request
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      console.log("File sent successfully");
-      // Handle successful file transmission here
-    } else {
-      console.error("Failed to send file:", await response.text());
-      // Handle server errors here
+    try {
+      const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
+      console.log("Swatch inputs:", swatchInputs);
+  
+      const gCode = genFullGCode(swatchInputs);
+      console.log("Generated GCode:", gCode);
+  
+      const endpoint = "http://192.168.0.202/upload"; // Update to the ESP32's local IP address and the upload endpoint
+  
+      // Create text content from colors.map data (including SVG path data)
+      const textContent = colors
+        .map(
+          (c) =>
+            `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${
+              c.name
+            }, Path Data: ${getPathData(c.svgIdentifier)}`
+        )
+        .join("\n");
+  
+      // Create a blob from the text content
+      const blob = new Blob([textContent], { type: "text/plain" });
+  
+      // Prepare FormData to mimic a file upload
+      const formData = new FormData();
+      formData.append("upload", blob, "colors.txt");
+  
+      console.log("FormData prepared:", formData);
+  
+      // Send the request
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (response.ok) {
+        console.log("File sent successfully");
+        // Handle successful file transmission here
+      } else {
+        console.error("Failed to send file:", await response.text());
+        // Handle server errors here
+      }
+    } catch (error) {
+      console.error("Error in sendToPalette:", error);
     }
-  } catch (error) {
-    console.error("Network error:", error);
-    // Handle network errors here
-  }
-};
+  };
+  
 
 
   const removeColor = (index: number) => {
