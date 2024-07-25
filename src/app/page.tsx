@@ -129,58 +129,55 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const swatchInputs = colors.map((c) =>
-      convertColorEntryToSwatchInput(c, svgContents)
-    );
-    console.log(genFullGCode(swatchInputs));
-    const endpoint = "https://obsidiancafe.com/files"; // Endpoint updated to include /files
-    const formData = new FormData();
+  const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
+  console.log(genFullGCode(swatchInputs));
 
-    // Append colors data (JSON) to FormData
-    formData.append("colors", JSON.stringify(colors));
+  const endpoint = "http://192.168.0.202/upload"; // Update to the ESP32's local IP address and the upload endpoint
+  const formData = new FormData();
 
-    // Create text content from colors.map data (including SVG path data)
-    const textContent = colors
-      .map(
-        (c) =>
-          `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${
-            c.name
-          }, Path Data: ${getPathData(c.svgIdentifier)}`
-      )
-      .join("\n");
+  // Append colors data (JSON) to FormData
+  formData.append("colors", JSON.stringify(colors));
 
-    // Create a blob from the text content
-    const blob = new Blob([textContent], { type: "text/plain" });
+  // Create text content from colors.map data (including SVG path data)
+  const textContent = colors
+    .map(
+      (c) =>
+        `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${
+          c.name
+        }, Path Data: ${getPathData(c.svgIdentifier)}`
+    )
+    .join("\n");
 
-    // Append additional parameters
-    formData.append("path", "/");
-    formData.append("/colors.txtS", "1");
+  // Create a blob from the text content
+  const blob = new Blob([textContent], { type: "text/plain" });
 
-    // Append the blob to FormData with a static file name and extension
-    formData.append("myfile[]", blob, "/colors.txt");
+  // Append additional parameters
+  formData.append("path", "/");
+  formData.append("/colors.txtS", "1");
 
-    // Send the request
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
-      });
+  // Append the blob to FormData with a static file name and extension
+  formData.append("myfile[]", blob, "/colors.txt");
 
-      if (response.ok) {
-        console.log("File sent successfully");
-        // Handle successful file transmission here
-      } else {
-        console.error("Failed to send file:", await response.text());
-        // Handle server errors here
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-      // Handle network errors here
+  // Send the request
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      console.log("File sent successfully");
+      // Handle successful file transmission here
+    } else {
+      console.error("Failed to send file:", await response.text());
+      // Handle server errors here
     }
-  };
+  } catch (error) {
+    console.error("Network error:", error);
+    // Handle network errors here
+  }
+};
+
 
   const removeColor = (index: number) => {
     setColors((colors) => colors.filter((_, i) => i !== index));
