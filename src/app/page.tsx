@@ -22,7 +22,10 @@ export default function Home() {
   const [svgContents, setSvgContents] = useState<string>("");
   const [colors, setColors] = useState<ColorEntry[]>([]);
 
-  fetch("/drawing4.svg")
+  fetch("/drawing4.svg", {
+    method: 'GET',
+    mode: 'no-cors', // Added no-cors mode
+  })
     .then((response) => response.text())
     .then((d) => {
       setSvgContents(d);
@@ -150,6 +153,7 @@ export default function Home() {
       // Send the request
       const response = await fetch(endpoint, {
         method: "POST",
+        mode: "no-cors", // Added no-cors mode
         body: formData,
       });
   
