@@ -119,23 +119,50 @@ export default function Home() {
   };
 
   const sendToPalette = async () => {
-    const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
-    const gCode = genFullGCode(swatchInputs);
-
-    downloadFile(gCode, "palette.gcode", "text/plain");
-  };
-
-  const downloadFile = (data, filename, type="text/plain") => {
-    const file = new Blob([data], {type: type});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(file);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(a.href);  
-    }, 0); 
+    try {
+      const swatchInputs = colors.map((c) => convertColorEntryToSwatchInput(c, svgContents));
+      console.log("Swatch inputs:", swatchInputs);
+  
+      const gCode = genFullGCode(swatchInputs);
+      console.log("Generated GCode:", gCode);
+  
+      const endpoint = "http://192.168.86.30/files"; // Update to the ESP32's local IP address and the upload endpoint
+  
+      // Create text content from colors.map data (including SVG path data)
+      const textContent = colors
+        .map(
+          (c) =>
+            `Color: ${c.color}, SVG Identifier: ${c.svgIdentifier}, Name: ${
+              c.name
+            }, Path Data: ${getPathData(c.svgIdentifier)}`
+        )
+        .join("\n");
+  
+      // Create a blob from the text content
+      const blob = new Blob([textContent], { type: "text/plain" });
+  
+      // Prepare FormData to mimic a file upload
+      const formData = new FormData();
+      formData.append("files", blob, "colors.txt");
+  
+      console.log("FormData prepared:", formData);
+  
+      // Send the request
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (response.ok) {
+        console.log("File sent successfully");
+        // Handle successful file transmission here
+      } else {
+        console.error("Failed to send file:", await response.text());
+        // Handle server errors here
+      }
+    } catch (error) {
+      console.error("Error in sendToPalette:", error);
+    }
   };
 
   const removeColor = (index: number) => {
