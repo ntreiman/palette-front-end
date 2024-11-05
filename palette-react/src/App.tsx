@@ -4,6 +4,9 @@ import { genFullGCode } from "./generator/gen-gcode";
 import { SVGRouter, getPathData } from "./svgs";
 import { convertColorEntryToSwatchInput, hexToHSL, hslToHex } from "./utils";
 import { guessColorName } from "./color-guesser";
+import PLogo from './plogo.png';
+
+
 
 export interface ColorEntry {
   color: HSLColor;
@@ -422,11 +425,11 @@ export default function Home() {
                     className="flex items-center justify-center border bg-black hover:bg-gray-800 border-white text-white px-2 py-1 font-semibold rounded mx-2 mb-2"
                     onClick={sendToPalette}
                   >
-                    {/* <img
-                      className="h-[20px] mr-2 mt-1"
-                      src="plogo.png"
-                      alt="logo"
-                    /> */}
+                    <img
+                    className="h-[20px] mr-2 mt-1"
+                    src={PLogo}
+                    alt="logo"
+                    />
                     send
                   </button>
                 )}
